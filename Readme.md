@@ -2,6 +2,9 @@
 
 ## Description
 In this repository, I stored all my practices written in Golang.
+These practices is based on TutorialEdge's videos.
+You can watch it in this link:
+[TutorialEdge's Golang Development Playlist](https://www.youtube.com/playlist?list=PLzUGFf4GhXBL4GHXVcMMvzgtO8-WEJIoY)
 
 ## How to run
 1. Create a go module by typing these command on your command prompt:
