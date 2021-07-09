@@ -19,7 +19,6 @@ or mingw on [msys2](https://www.msys2.org/))
     ```
 
 4. Run project:
-    Windows
     ```cmd
     <mod_name>.exe
     ```
