@@ -1,8 +1,23 @@
-If you're having this error when importing gorilla/mux:
-main.go:9:2: no required module provides package github.com/gorilla/mux: working directory is not part of a module 
+# Hello Golang
 
-run these two command in cmd
-```cmd 
-go mod init main
-go mod tidy
-```
+## Description
+In this repository, I stored all my practices written in Golang.
+
+## How to run
+1. Create a go module by typing these command on your command prompt:
+    ```cmd 
+    go mod init <name_module_you_want>
+    go mod tidy
+    ```
+2. Command to run test:
+    ```cmd
+    go test
+    ```
+    or
+    ```cmd
+    go test .
+    ```
+3. Command to run app:
+    ```cmd
+    go run <filename>.go
+    ```
