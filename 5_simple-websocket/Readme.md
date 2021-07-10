@@ -12,4 +12,3 @@ References:
 
 Will try:
 1. [chat](https://scotch.io/bar-talk/build-a-realtime-chat-server-with-go-and-websockets)
-2.
