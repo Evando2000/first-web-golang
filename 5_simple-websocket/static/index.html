@@ -7,14 +7,27 @@
     <title>Go Socket</title>
 </head>
 <body>
-    <h2>Hello</h2>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+    <h2>Hello From Client</h2>
     <script>
-      const socket = io("http://localhost:8000/socket.io/");
-      socket.emit("chat messsage", "hello")
-      socket.on("chat message", (msg)=> {
-        console.log(msg)
-      })
+      let socket = new WebSocket("ws://localhost:8000/ws");
+      console.log("Create ws connection");
+      
+      socket.onopen = () => {
+        console.log("WS connected");
+        socket.send("Hi from the client")
+      };
+
+      socket.onmessage = (msg) => {
+        console.log(msg);
+      };
+      
+      socket.onclose = (event) => {
+        console.log("Socket closed: ", event);
+      };
+
+      socket.onerror = (error) => {
+        console.log("Socket error: ", error);
+      };
     </script>
 </body>
 </html>

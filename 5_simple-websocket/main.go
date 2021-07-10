@@ -5,48 +5,65 @@ import (
 	"log"
 	"net/http"
 
-	socketio "github.com/googollee/go-socket.io"
+	"github.com/gorilla/websocket"
 )
 
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	// Allow any connection regardless the origin
+	// To put it simple: ws can handle all connection from all origin
+	CheckOrigin: func(r *http.Request) bool { return true },
+}
+
+func homePage(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Homepage")
+	// http.ServeFile(w, r, "static/index.html")
+}
+
+func reader(conn *websocket.Conn) {
+	// Infinite loop
+	for {
+		messageType, p, err := conn.ReadMessage()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
+		// Print incomming message
+		log.Println(string(p))
+
+		// Echo back message to the client
+		if err := conn.WriteMessage(messageType, p); err != nil {
+			log.Println(err)
+			return
+		}
+	}
+}
+
+func wsEndpoint(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "websocket endpoint")
+	ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+	}
+	log.Println("WS connected")
+	err = ws.WriteMessage(1, []byte("Hi Client!"))
+	if err != nil {
+		log.Println(err)
+	}
+	// listen indefinitely for new messages coming
+	// through on our WebSocket connection
+	reader(ws)
+}
+
+func setupRoutes() {
+	http.HandleFunc("/", homePage)
+	http.HandleFunc("/ws", wsEndpoint)
+}
+
 func main() {
-	server := socketio.NewServer(nil)
-
-	server.OnConnect("/", func(s socketio.Conn) error {
-		s.SetContext("")
-		fmt.Println("connected:", s.ID())
-		return nil
-	})
-
-	server.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
-		fmt.Println("notice:", msg)
-		s.Emit("reply", "have "+msg)
-	})
-
-	server.OnEvent("/chat", "msg", func(s socketio.Conn, msg string) string {
-		s.SetContext(msg)
-		return "recv " + msg
-	})
-
-	server.OnEvent("/", "bye", func(s socketio.Conn) string {
-		last := s.Context().(string)
-		s.Emit("bye", last)
-		s.Close()
-		return last
-	})
-
-	server.OnError("/", func(s socketio.Conn, e error) {
-		fmt.Println("meet error:", e)
-	})
-
-	server.OnDisconnect("/", func(s socketio.Conn, reason string) {
-		fmt.Println("closed", reason)
-	})
-
-	go server.Serve()
-	defer server.Close()
-
-	http.Handle("/socket.io/", server)
-	http.Handle("/", http.FileServer(http.Dir("static")))
-	log.Println("Serving at localhost:8000...")
+	fmt.Println("Go Websockets with Gorilla")
+	setupRoutes()
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
