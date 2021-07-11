@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -53,7 +54,20 @@ func migration() {
 }
 
 func main() {
-	db, err = gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=postgres sslmode=disable password=postgresql")
+	host_db := "localhost"
+	port_db := "5432"
+	username_db := "postgres"
+	name_db := "postgres"
+	sslmode := "disable"
+	password_db := "postgresql"
+
+	db, err = gorm.Open(
+		"postgres",
+		fmt.Sprintf(
+			"host=%s port=%s user=%s dbname=%s sslmode=%s password=%s",
+			host_db, port_db, username_db, name_db, sslmode, password_db),
+	)
+
 	migration()
 	urlHandler()
 	defer db.Close()
